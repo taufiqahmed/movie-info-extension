@@ -4,7 +4,11 @@
   "name": "Movie Info",
   "description": "Select A Movie Name and Get Detailed Information.",
   "version": "1.0",
-
+  "icons": { 
+    "16": "app-icon-16.png",
+    "48": "app-icon-48.png",
+    "128": "app-icon.png"
+  },
   "browser_action": {
     "default_icon": "app-icon.png",
     "default_popup": "index.html"

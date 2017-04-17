@@ -1,0 +1,31 @@
+{
+  "manifest_version": 2,
+
+  "name": "Movie Info",
+  "description": "Select A Movie Name and Get Detailed Information.",
+  "version": "1.0",
+
+  "browser_action": {
+    "default_icon": "app-icon.png",
+    "default_popup": "index.html"
+  },
+  "permissions": [
+    "activeTab",
+    "http://*/*",
+    "https://*/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "http://*/*",
+        "https://*/*"
+      ],
+      "js": [
+        "contentscript.js"
+      ],
+      "run_at": "document_end",
+      "all_frames": false
+    }
+  ],
+  "author": "@taufiqahmed"
+}

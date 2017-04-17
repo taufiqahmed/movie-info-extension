@@ -1,0 +1,324 @@
+
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="../../bower_components/iron-image/iron-image.html">
+<link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../../bower_components/paper-toolbar/paper-toolbar.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../bower_components/paper-styles/default-theme.html">
+<link rel="import" href="../../bower_components/paper-progress/paper-progress.html">
+<link rel="import" href="../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../bower_components/neon-animation/neon-animation.html">
+<link rel="import" href="../../bower_components/neon-animation/neon-animated-pages.html">
+<link rel="import" href="../../bower_components/neon-animation/neon-animatable.html">
+
+
+<dom-module id="root-element">
+<template>
+  <style include="iron-flex iron-flex-alignment">
+    :host {
+      display: block;
+      width: 300px;
+      height: 100%;
+      margin: 0 auto;
+      font-family: 'Roboto', 'Noto', sans-serif;
+      -webkit-font-smoothing: antialiased;
+      font-size: 14px;
+      font-weight: 400;
+      line-height: 20px;
+      color: var(--primary-text-color);
+      background-color: var(--paper-grey-100);
+    }
+
+    paper-toolbar {
+      --paper-toolbar-background: var(--paper-teal-500);
+      --paper-toolbar-height: 50px;
+      --paper-toolbar-title: {
+        padding-left: 10px;
+      }
+    }
+
+    .heading {
+      font-size: 20px;
+      font-weight: 500;
+      line-height: 28px;
+    }
+
+    .subheading {
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    .caption {
+      font-size: 12px;
+      font-weight: 400;
+      letter-spacing: 0.011em;
+      line-height: 20px;
+      color: var(--secondary-text-color);
+    }
+
+    .icon-button {
+      color: var(--primary-color);
+    }
+
+    .btn-link {
+      --paper-button: {
+        padding: 0;
+      }
+    }
+    
+    .btn-sm {
+      padding: 5px 10px;
+    }
+
+    paper-material {
+      background-color: #fff;
+    }
+
+    .item {
+      border-bottom: 1px solid #eee;
+      cursor: pointer;
+      padding-top: 5px;
+      padding-bottom: 5px;
+      --paper-item: {
+        @apply(--layout-justified);
+      }
+    }
+
+    .item .title {
+      line-height: 1.2;
+    }
+
+    .item:hover {
+      background-color: var(--paper-teal-100);
+    }
+
+    .poster {
+      width: 100%;
+      height: 200px;
+      background-color: #fafafa;
+    }
+
+    .poster-thumbnail {
+      width: 100px;
+      height: 100%;
+      background-color: #fafafa;
+    }
+
+    .info-card {
+      --paper-card-header-image: {
+        width: 300px;
+        min-height: 400px;
+      }
+    }
+    
+    .card-content > * {
+      margin: 5px 0;
+      padding: 0;
+    }
+
+    .error {
+      color: var(--paper-red-500);
+    }
+
+    .footer {
+      position: absolute;
+      bottom: 0;
+    }
+
+    paper-progress {
+      --paper-progress-active-color: var(--paper-teal-300);
+    }
+
+    paper-card {
+      --paper-card-header-image-text: {
+        background-color: rgba(245,0,87,0.8);
+        color: white;
+        width: 100%;
+        display: block;
+        line-height: 1;
+      }
+    }
+
+    .icon {
+      margin-right: 8px;
+    }
+
+  </style>
+
+  <paper-toolbar>
+    <div style="padding-right:10px;"><iron-icon src="../../app-icon.png"></iron-icon></div>
+    <div title="">MOVIE INFO</div>
+    <paper-progress hidden$="[[!loading]]" class="bottom fit" indeterminate></paper-progress>
+  </paper-toolbar>
+  
+  <neon-animated-pages selected="[[selectedIndex]]">
+    
+    <neon-animatable entry-animation="slide-from-left-animation" exit-animation="slide-left-animation">
+      <h3 class="subheading error" style="padding: 0 10px;" hidden="[[!errorInfo]]">[[errorInfo]]</h3>
+      <template is="dom-repeat" items="[[response]]" sort="_sort">
+        <paper-item class="item" on-tap="getMovieInfo">
+          <paper-item-body class="flex">
+            <div class="title"><strong>[[item.Title]]</strong></div> 
+            <div class="caption">[[item.Year]]</div>
+          </paper-item-body>
+          <paper-icon-button class="icon-button" icon="chevron-right"></paper-icon-button>
+        </paper-item>
+      </template>
+    </neon-animatable>
+
+    <neon-animatable entry-animation="slide-from-right-animation" exit-animation="slide-right-animation">
+      <paper-button class="btn-link btn-sm" on-tap="backToPreviousPage">
+        <iron-icon icon="chevron-left"></iron-icon>
+        Back To Results
+      </paper-button>
+      <paper-card class="info-card" heading="[[movie.Title]]" image="[[movie.Poster]]" alt="[[movie.Title]]" hidden$="[[loading]]" preload-image fade-image placeholder-image="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAAEsCAYAAAB5fY51AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAALEgAACxIB0t1+/AAAABx0RVh0U29mdHdhcmUAQWRvYmUgRmlyZXdvcmtzIENTNui8sowAAAAWdEVYdENyZWF0aW9uIFRpbWUAMDQvMTUvMTdnU74TAAAJVElEQVR4nO3ay29U9xnH4TfFMJaHJOM6XKpBMsQSCJkmhQXZpItk003/0Wy6yiabRIqiSqA2JAQXYcnASEyKL8Rjl7E8sa10YWaCibnkVvxNn2c19sw55x3Q+fA75/DKd19/810BBPjdyx4A4EUJFhBDsIAYggXEECwghmABMQQLiCFYQAzBAmIIFhBDsIAYggXEECwghmABMQQLiCFYQAzBAmIIFhBDsIAYggXEECwghmABMQQLiCFYQAzBAmIIFhBDsIAYggXEECwghmABMQQLiCFYQAzBAmIIFhBDsIAYggXEECwghmABMQQLiCFYQAzBAmIIFhBDsIAYggXEECwghmABMQQLiCFYQAzBAmIIFhBDsIAYggXEECwghmABMQQLiCFYQAzBAmIIFhBDsIAYggXEECwghmABMQQLiCFYQAzBAmIIFhBDsIAYggXEECwghmABMQQLiCFYQAzBAmIIFhBDsIAYggXEECwghmABMQQLiCFYQAzBAmIIFhBDsIAYggXEECwghmABMQQLiCFYQAzBAmIIFhBDsIAYggXEECwghmABMQQLiCFYQAzBAmIIFhBDsIAYggXEECwghmABMQQLiCFYQAzBAmIIFhBDsIAYggXEECwghmABMQQLiCFYQAzBAmIIFhBDsIAYggXEECwghmABMQQLiCFYQAzBAmIIFhBDsIAYggXEECwghmABMQQLiCFYQAzBAmIIFhBDsIAYggXEECwghmABMQQLiCFYQAzBAmIIFhBDsIAYggXEECwghmABMQQLiDH2sgdgr/nu/fp2e3v08+TRZrWnJl/iRPu70blXzfFGnTlx7Fc9zlJvvT65frNmp9t1YfpUdR+sVlUdyD8Tfn1WWAfMtYVOzXfv11LvP3V3caU+m5uvj/75VW1t7/zs/f7t7//4haasmut06879lV9sfy/qs7n5+mxu/n9+XA4GK6wDqNVs1vtvn6+qqiu3Furu4krde/DNz1rNrD7c+NnROwj+cumPL3sEXiLBOuDOnDhWdxdXqr85qKqq/uagri10RpdGreZEXTh9anSJdGdxua4tdGpre6ea4416763zdeXW7VpeW6+qqg8+vVLHXn+t3n/7fPU3B3veO33ijbo0c7oOjx2qDz69Uu2pyVpaW98T0BfxvBmv3Fqo7oPV0Yyz0+1RjHsPN+rzhc5opmOvv7Zn3x99/tVo/uH3aU9NVq+/Uf3NQR0eO1QXZ6afub/ltfV6763zdby1d98cfC4JD7j57v2q2r2XtbW9U59cv1lLa+t1+dyb9e7s2aravUxa6q1Xf3NQV2/drlazWe+9db5On3ijmuONujQzXa3mRFVVvffW+bo0Mz3artfv17uzZ2t2ul13F1fqVvffo2N3H6xWq9msMyffeOF5nzfj0MWZ6dF71xY6o20/vv6v6vX7o217/f5zj9l9sFrtqcnn7u/izPQoXGSywjqAev1+ffzlzdoYDKq/OajTJ96o9tRk3Vlcrv7mYM+K5PChQ/XJ9Zt1Z3G5zrX/UFVVW9vb1Rxv1IXWqaqqah2dqMNju3/Vw1XFUm+9ev2NunzuzWpPTVZ7arLuLq7U3cWVujC9u93hsUP159mzdXjs0AvPfu/BN8+c8XjrtXrn3Ez1Hm7U0tp6TTQa1d8c7AZ3MKit7Z09216cma6rt24/85it5kRdfBThMyeOPboHuF5bOzs/2F9/czD6R4A8gnUAHRkbq+OtV6vq1To19ftqHd1dHQ0vC48/dpk0DFB/89tqHZ2o2el2zXW69eHVL+ps++ToRH7S0qOVxtVbt58ahFaz+aNi9SIzVlV9/OXNWl5br+Z447nbNht7P7OfYYx3X38/7+rD/g/292O/DweLYB1AE43GaJXzuCOPTsz+YDD63fAkP/LoRLwwfarOnDhWNzr3ar57v1pHJ555s352ur3nhP65njfjncXlWl5br4sz03W2fbJudO7VXKf71G23dn76g4J99/cbePDw/8w9rCDDm9ZznW71N3cvn4aP+M+cPFb9zUHdWVyu5nijJo82q+qHJ+gwHsOIdVdWqzneqOOt16o53vjBqufXmHFoa3unuiurT922vzmoG3fv/WKz9B5u1J3F5T3H/2xufvSQYr/XHCxWWEGa4426fO7NurbQqQ+vfjH6/ex0e3SP6/FLvFbz+9XVuVMna3ltvT68+sXoBvXT9rXf6m4/y2vr9cGnV0Y/D5/ePWvGVnOi5rv369pCp64tdPYEcvj9rt66Pdp2+LDgp9hvf49fEvY3B9V9sFqHxw7VmRPH9n39tEtqXo5Xvvv6m+9e9hB8b6m3XkfGxkb3rZ71uardp4dPnoSje0FPPLbvPdyobx/dkB+GYmt7Z3Sv5/HjPm+Ox5/4DT35+afNODzmkbGxao43avVhf89nHn+/dXSilnrro5mfnOvJn4fff7/9NccbdaNzr+4urtRfL/+pmuON6j3cqMNjh575moNDsPhNG67iWs2JWlpbr7lOd8//4yKLS0J+077d3q47neXRvbz21GS9c27mJU/FT2WFBcTwlBCIIVhADMECYggWEEOwgBiCBcQQLCCGYAExBAuIIVhADMECYggWEEOwgBiCBcQQLCCGYAExBAuIIVhADMECYggWEEOwgBiCBcQQLCCGYAExBAuIIVhADMECYggWEEOwgBiCBcQQLCCGYAExBAuIIVhADMECYggWEEOwgBiCBcQQLCCGYAExBAuIIVhADMECYggWEEOwgBiCBcQQLCCGYAExBAuIIVhADMECYggWEEOwgBiCBcQQLCCGYAExBAuIIVhADMECYggWEEOwgBiCBcQQLCCGYAExBAuIIVhADMECYggWEEOwgBiCBcQQLCCGYAExBAuIIVhADMECYggWEEOwgBiCBcQQLCCGYAExBAuIIVhADMECYggWEEOwgBiCBcQQLCCGYAExBAuIIVhADMECYggWEEOwgBiCBcQQLCCGYAExBAuIIVhADMECYggWEEOwgBiCBcQQLCCGYAExBAuIIVhADMECYggWEEOwgBiCBcQQLCCGYAExBAuIIVhADMECYggWEEOwgBiCBcQQLCCGYAExBAuIIVhADMECYggWEEOwgBiCBcQQLCCGYAExBAuIIVhADMECYggWEEOwgBiCBcQQLCCGYAExBAuIIVhADMECYggWEEOwgBiCBcT4Lzb0xbN3lcjrAAAAAElFTkSuQmCC">
+        <div class="card-content">
+            <div class="caption">[[movie.Year]] - [[movie.Genre]]</div>
+            <div class="layout horizontal center">
+              <div class="subheading layout horizontal center" style="margin-right: 10px;">
+                <iron-image class="icon" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAEJ0lEQVRIS41WWVBcRRQ9PfsAsw8IJIQSshl/rIIyiHE3RoNMkfylKqUUIdHS0h+//DGl//rhUuWCKT5SVqmVYoSQPdG4lD/kNysEx6SGCMzGAM9ZmOftfq8fbwYmpt/M3O7bt+/pc2/P7cdALf5Hd7RYKO1hqsXFx0ZjTOuqqibvNzbNqaykWG3s3IZdf/Yxcj4CZuvztXhhd1qh0sPoUVGiX4uBxcdl2DS3ng1jFhSUEjJ30lBL+SiLXepaDrUF3TZbDuoKfeVuy9zxzWts+Dzvm+0q52B1YKXoQmI6qbDYxW71oUeDKCnpMgdmZ7KvRUlzvh6geY65/Ji7lgT76wIHCKO4lFizswoSa5xXzptZWWsCmL2qAzTsCKC4nNJiX7E7uWszi2rAUs+ZWN1+zAoG57vVhh1BYpAy4mqOsQxFtZCZw1YGUMNDRJuePveEWv8IMVhM6SdxNZnVFptZVguTrS6gA5zlAEEUsknKIP+shqnaSfm/3PB1dk9QS/JtDrCdM6Bzqx/R3ZF/cGGsES/23hO+jg+FcXBwXvTN+v2RGrx12CvsuN68ITtncJ0Aps4QwDYfCosZ45jujtzD+dFGcMlb/0EPho9ndYAmcjiDwcONGPqGO9bG+yO1aG+z46UXXCIKdo8EOK0xyGUITf8zPf/qXVw6uRFcNjc7UFfLsLikIh7PG/qB/jCODc8b40MD9fjhxwSi3zUJP3aPD/M30mCTp7rU8DY/5UBjwNtzPX/TwhYCuIPOTg+uXMmio8ODiYmsoT/UX49vh+fw8/gmYf/Fp614+92YmOfN6aMc8BAJgK1+5BdWc/BsTwy/jLeCy0hvCKNjCUNK/eBAA4aOzRp2n328Ee+8d1eMBQOvDwnO4NZJjUEuTWdWLwPP9Ezj8vjD4PKNI0346usZvEnyS5JSLwF+PdWGp/fexueftOD9ozMY/36TYOAggPmbAmCnGtrqQz6TMU7BU69M4bfT7eDyww9acfSjmCF/P7MZu16eFE5ee30Djhxwi3HHY7XoejKEA70O4cflD2gAN8e61NAWL/5Na8WOswi3NWFuKo769mZkZ9PwNPgNKfXcVsksYSmxIOwLSh55JYflVFb4cPooRLcyYDdGd6rhLX4D4EEqpTzv5uppLuMCwO9DUgD89DgxIICUluT71Z4HqUsyCq6AnxhQiDhAcLMfSrJ6LeKLKncoj3QlmzKASQK4HiUGAkDLgXQmDStvuPXCYl4nWToDPqSmFsCunehc9rV63aViDkVKUmUzbi55V8srk8b8s+aGIwd2txPM4qR7eUEhBp0jzGrtq2ushc1BlzwvFypd8HR5a3R4n0sdmuu5ztykra4r5krIxhfJbiUqiv/VEx0jUNkeZrG45VuF8G141cu4PtbeOiTiGtKErypWK85u3zex7z/Zt3rjZ7feZwAAAABJRU5ErkJggg==" width="21" height="21" sizing="contain"></iron-image>
+                <div> [[movie.imdbRating]] <span class="caption">([[movie.imdbVotes]])</span></div>
+              </div>
+              <div class="subheading layout horizontal center">
+                <iron-image class="icon" src="data:image/png;base64,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"></iron-image>
+                <div>[[movie.rt]]</div>
+              </div>
+            </div>
+            <div>[[movie.Plot]]</div>
+        </div>
+      </paper-card>
+    </neon-animatable>
+
+  </neon-animated-pages>
+</template>
+<script>
+  window.browser = (function () {
+  return window.msBrowser ||
+    window.browser ||
+    window.chrome;
+  })();
+  
+  Polymer({
+
+    is: 'root-element',
+
+    properties: {
+      response: {
+        type: Array,
+        notify: true,
+        value: []
+      },
+      movie: {
+        type: Object,
+        notify: true,
+        value: {}
+      },
+      selectedIndex: {
+        type: Number,
+        value: 0,
+        notify: true
+      },
+      loading: {
+        type: Boolean,
+        value: false
+      },
+      errorInfo: {
+        type: String,
+        value: ""
+      }
+    },
+
+    ready: function () {
+      // For Testing on Browser, Uncomment the following lines
+      // this.getSearchResults("Star Wars", function(response){
+      //   this.set("response", response.Search);
+      // }.bind(this))
+      var self = this;
+      browser.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+        var activeTab = tabs[0];
+        browser.tabs.sendMessage(activeTab.id, { action: 'get-selected-text' }, function (selectedText) {
+          self.getSearchResults(selectedText, function (response) {
+            // self.set(["response", response.Search]);
+            self.response = response.Search;
+          })
+        });
+      });
+    },
+
+    _sort: function (a, b) {
+      if (a.imdbVotes < b.imdbVotes) {
+        return 1;
+      } else if (a.imdbVotes > b.imdbVotes) {
+        return -1;
+      } else {
+        return 0;
+      }
+    },
+
+    getSearchResults: function (searchTerm, cbfn) {
+      var api = "http://www.omdbapi.com/?s=" + encodeURIComponent(searchTerm);
+      var xhr = new XMLHttpRequest();
+      xhr.open('GET', api);
+      xhr.responseType = 'json';
+      xhr.onload = function () {
+        // Parse and process the response from Google Image Search.
+        var response =  xhr.response;
+        if (!response) {
+          this.errorInfo = "There is something wrong with the API Server! Please retry again or chose another movie name."
+          return;
+        }
+        if (response.Response == 'False') {
+          this.errorInfo = "Couldn't Found Any Data Related to this Movie on the Database."
+        }
+        cbfn(response);
+        this.set("loading", false)
+      }.bind(this);
+      xhr.onerror = function () {
+        this.errorInfo = "Network Error Occured. Check your internet connection!"
+      };
+      xhr.send();
+      this.set("loading", true)
+    },
+
+    getMovieInfo: function (e) {
+      this.set("selectedIndex", 1);
+      console.log(e.model.item);
+      var id = e.model.item.imdbID;
+      var api = "http://www.omdbapi.com/?i=" + encodeURIComponent(id) + "&plot=full";
+      var xhr = new XMLHttpRequest();
+      xhr.open('GET', api);
+      xhr.responseType = 'json';
+      xhr.onload = function () {
+        // Parse and process the response from Google Image Search.
+        var response =  xhr.response;
+        if (!response) {
+          this.errorInfo = "There is something wrong with the API Server! Please retry again or select another movie title."
+          return;
+        }
+        if (response.Response == 'False') {
+          this.errorInfo = "Couldn't Found Any Data Related to this Movie on the Database."
+        }
+        this.set("movie", response);
+        var rt = response.Ratings[1] ? response.Ratings[1].Value : "N/A"
+        this.set("movie.rt", rt)
+        this.set("loading", false)
+      }.bind(this);
+      xhr.onerror = function () {
+        this.errorInfo = "Network Error Occured. Check your internet connection!"
+      };
+      xhr.send();
+      this.set("loading", true)
+    },
+
+    backToPreviousPage: function (){
+      this.set("selectedIndex", 0);
+    }
+
+  });
+</script>
+</dom-module>

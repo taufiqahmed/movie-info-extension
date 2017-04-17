@@ -1,0 +1,10 @@
+{
+  "entrypoint": "index.html",
+  "shell": "src/root-element/root-element.html",
+  "includeDependencies": [
+    "manifest.json",
+    "contentscript.js",
+    "app-icon.png",
+    "bower_components/webcomponentsjs/webcomponents-lite.min.js"
+  ]
+}

@@ -1,6 +1,6 @@
-# \<chrome-extension\>
+# Movie Info Extension
 
-Chrome Extension For Movie Info
+Cross Browser Extension For Searching Movie and Showing Plot, Ratings etc.
 
 ## Run Bower Installation
 ```

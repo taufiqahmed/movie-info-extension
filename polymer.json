@@ -5,6 +5,8 @@
     "manifest.json",
     "contentscript.js",
     "app-icon.png",
+    "app-icon-48.png",
+    "app-icon-16.png",
     "bower_components/webcomponentsjs/webcomponents-lite.min.js"
   ]
 }
